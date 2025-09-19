@@ -1,3 +1,5 @@
+
+```javascript
 import * as THREE from 'three';
 
 const fishMat = new THREE.MeshLambertMaterial({ color: 0xc0c0c0 });
@@ -124,13 +126,15 @@ export function createRiggedFish({ scene, score = 0, type = 'classic', opts = {}
     segments, // legacy compatibility for showcase
     wiggleRotAmp: 0.24,
     tailMaxRot: 0.16,
-    pattern: opts.pattern || (isVitiligo ? 'bankCross' : (isGolden ? 'jumper' : ['sine','zigzag','drift'][Math.floor(Math.random()*3)])),
+    pattern: opts.pattern || (isVitiligo ? 'diagonal' : (isGolden ? 'jumper' : ['sine','zigzag','drift'][Math.floor(Math.random()*3)])),
     drift: 0,
     sizeScale,
     rareTiny,
     weight,
     sprinter,
     boosted,
+    diagDir: isVitiligo ? (xPos < 0 ? 1 : -1) : 1,
+    diagSpeed: isVitiligo ? (0.055 + Math.random()*0.045) : 0,
     crossDir: isVitiligo ? (xPos < 0 ? 1 : -1) : 1,
     crossSpeed: isVitiligo ? (0.05 + Math.random()*0.045) : 0,
     crossFlipTimer: 0, crossFlipInterval: isVitiligo ? (1.2 + Math.random()*1.4) : 0,
@@ -163,7 +167,12 @@ export function updateRiggedFish(fish) {
 
   // Lateral movement
   ud.swimTimer += 0.07;
-  if (ud.pattern === 'bankCross') {
+  if (ud.pattern === 'diagonal') {
+    const half = 3.3, margin = 0.2, s = ud.diagSpeed || 0.06;
+    fish.position.x += (ud.diagDir || 1) * s;
+    if (fish.position.x > half - margin) { fish.position.x = half - margin; ud.diagDir = -1; }
+    if (fish.position.x < -half + margin) { fish.position.x = -half + margin; ud.diagDir = 1; }
+  } else if (ud.pattern === 'bankCross') {
     const half = 3.3, m = 0.15, s = ud.crossSpeed || 0.05;
     fish.position.x += s * (ud.crossDir || 1);
     if (fish.position.x > half - m) ud.crossDir = -1;
