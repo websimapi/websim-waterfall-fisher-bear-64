@@ -1,3 +1,5 @@
+
+```javascript
 import { createFish } from '../entities/fish.js';
 import { FISH } from '../unlocks.js';
 
@@ -46,7 +48,8 @@ export function updateSpawner(scene, activeFishes, score, playerProgress) {
     if (spawnTimer-- <= 0 && activeFishes.length < maxConcurrent) {
         const step = currentPattern.steps[patternStep];
         const fishInfo = getFishToSpawn(score, activeFishes, playerProgress);
-        const f = createFish(scene, score, fishInfo.id, { x: step.x, pattern: step.move });
+        const pattern = fishInfo.id === 'vitiligo' ? 'diagonal' : step.move;
+        const f = createFish(scene, score, fishInfo.id, { x: step.x, pattern });
         activeFishes.push(f);
         spawnTimer = step.delay;
         patternStep++;
